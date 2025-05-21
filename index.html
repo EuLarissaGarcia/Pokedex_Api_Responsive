@@ -1,0 +1,58 @@
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex Moderna</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://db.onlinewebfonts.com/c/faa9c8362473bf8b1d2886cfb5962735?family=Alleyn+W01+Regular" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg" alt="Pokédex Logo" class="logo">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Buscar Pokémon pelo nome ou número...">
+                <button id="search-button">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </div>
+            
+            <div class="filters-container" id="type-filters">
+                <!-- Os botões de filtro serão gerados dinamicamente pelo JavaScript -->
+            </div>
+            
+            <button class="reset-filters" id="reset-filters">
+                <i class="fas fa-sync-alt"></i> Limpar Filtros
+            </button>
+        </header>
+
+        <div class="spinner" id="spinner"></div>
+        <div class="error-message" id="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            Nenhum Pokémon encontrado. Tente novamente.
+        </div>
+
+        <div class="pokemon-grid" id="pokemon-grid"></div>
+
+        <div class="pagination">
+            <button id="prev-button" disabled>
+                <i class="fas fa-arrow-left"></i> Anterior
+            </button>
+            <button id="next-button">
+                Próximo <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="pokemon-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <div class="pokemon-detail" id="pokemon-detail"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
