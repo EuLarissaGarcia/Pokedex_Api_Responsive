@@ -365,6 +365,7 @@ header {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 30px;
+    padding: 10px 100px 0px 100px;
 }
 
 /* --------------------------------------------------------------------------------
@@ -529,47 +530,107 @@ header {
 /* --------------------------------------------------------------------------------
    CONTROLES DE PAGINAÇÃO
    -------------------------------------------------------------------------------- */
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin: 50px 0 30px;
-    gap: 20px;
-}
+ .pagination {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 50px 0 30px;
+            gap: 20px;
+        }
 
-.pagination button {
-    padding: 14px 24px;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius-xl);
-    cursor: pointer;
-    transition: all var(--transition-normal);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: var(--shadow-sm);
-}
+        .pagination-buttons {
+            display: flex;
+            gap: 20px;
+        }
 
-.pagination button:hover:not(:disabled) {
-    background-color: var(--primary-dark);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(255, 83, 80, 0.25);
-}
+        .pagination button {
+            padding: 14px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-xl);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-sm);
+        }
 
-.pagination button:active:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 6px rgba(255, 83, 80, 0.2);
-}
+        .pagination button:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(255, 83, 80, 0.25);
+        }
 
-.pagination button:disabled {
-    background-color: var(--gray-400);
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-    opacity: 0.7;
-}
+        .pagination button:active:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(255, 83, 80, 0.2);
+        }
 
+        .pagination button:disabled {
+            background-color: var(--gray-400);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+
+        .page-jump {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background-color: white;
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .page-jump label {
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 14px;
+        }
+
+        .page-jump input {
+            width: 60px;
+            padding: 8px 12px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--border-radius-sm);
+            text-align: center;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+        }
+
+        .page-jump input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 83, 80, 0.1);
+        }
+
+        .page-jump button {
+            padding: 8px 16px;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all var(--transition-fast);
+        }
+
+        .page-jump button:hover {
+            background-color: var(--secondary-dark);
+            transform: translateY(-2px);
+        }
+
+        .page-info {
+            color: var(--gray-600);
+            font-size: 14px;
+            margin-left: 10px;
+        }
 /* ==================================================================================
    MODAL DE DETALHES DO POKÉMON
    ================================================================================== */
@@ -1197,8 +1258,8 @@ header {
     }
     
     .tab-button {
-        font-size: 14px;
-        padding: 10px 15px;
+        font-size: 13px;
+        padding: 10px 10px;
     }
 }
 /* ==================================================================================
@@ -1326,9 +1387,22 @@ header {
     .stats {
         padding: 20px 15px;
     }
+
+    .stats-grid{
+        gap: 8px;
+
+    }
     
     .stat-name {
         width: 100px;
+    }
+
+    .stats-content{
+        padding: 5px
+    }
+
+    .stat-item-enhanced {
+       padding: 8px; 
     }
 }
 
@@ -1336,6 +1410,10 @@ header {
    SMARTPHONES (até 576px)
    -------------------------------------------------------------------------------- */
 @media (max-width: 576px) {
+    header{
+        margin-bottom: 30px;
+    }
+    
     .container {
         padding: 0 10px;
     }
@@ -1352,7 +1430,7 @@ header {
     
     .search-container input {
         border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
-        padding: 15px;
+        padding: 10px;
     }
     
     .search-container button {
@@ -1373,6 +1451,7 @@ header {
     .pokemon-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 15px;
+        padding: 10px;
     }
     
     .pokemon-card img {
@@ -1392,7 +1471,7 @@ header {
     }
     
     .pagination button {
-        width: 100%;
+        width: 40%;
         justify-content: center;
         padding: 12px 20px;
     }
@@ -1423,6 +1502,7 @@ header {
     .pokemon-grid {
         grid-template-columns: 1fr 1fr;
         gap: 12px;
+        padding: 10px;
     }
     
     .pokemon-card img {

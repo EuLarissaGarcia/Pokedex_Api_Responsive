@@ -8,28 +8,31 @@
 <!-- --------------------------------------------------------------------------------
    HEAD - CONFIGURAÇÕES E METADADOS
    -------------------------------------------------------------------------------- -->
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokédex Moderna</title>
-    <!-- Ícones Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Fontes do Google -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Fonte personalizada Alleyn -->
-    <link href="https://db.onlinewebfonts.com/c/faa9c8362473bf8b1d2886cfb5962735?family=Alleyn+W01+Regular" rel="stylesheet">
-    <!-- Folha de estilos principal -->
-    <link rel="stylesheet" href="styles.css">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Pokédex Moderna</title>
+   <!-- Ícones Font Awesome -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <!-- Fontes do Google -->
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+   <!-- Fonte personalizada Alleyn -->
+   <link href="https://db.onlinewebfonts.com/c/faa9c8362473bf8b1d2886cfb5962735?family=Alleyn+W01+Regular"
+      rel="stylesheet">
+   <!-- Folha de estilos principal -->
+   <link rel="stylesheet" href="styles.css">
 </head>
 
 <!-- --------------------------------------------------------------------------------
    BODY - CONTEÚDO PRINCIPAL DA PÁGINA
    -------------------------------------------------------------------------------- -->
+
 <body>
-    <!-- Container principal -->
-    <div class="container">
-        
-        <!-- ==================================================================================
+   <!-- Container principal -->
+   <div class="container">
+
+      <!-- ==================================================================================
            SEÇÃO DO CABEÇALHO
         ================================================================================== 
         
@@ -46,120 +49,125 @@
         <img src="espadas.png" alt="Batalha" class="sidebar-icon">
         <span class="sidebar-text">Batalha</span> </a>-->
 
-</div>        
-        <!-- --------------------------------------------------------------------------------
+   </div>
+   <!-- --------------------------------------------------------------------------------
            HEADER PRINCIPAL
            -------------------------------------------------------------------------------- -->
-        <header>
-            <!-- Logo da Pokédex -->
-            <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg" 
-                 alt="Pokédex Logo" 
-                 class="logo">
-            
-            <!-- --------------------------------------------------------------------------------
+   <header>
+      <!-- Logo da Pokédex -->
+      <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg"
+         alt="Pokédex Logo" class="logo">
+
+      <!-- --------------------------------------------------------------------------------
                BARRA DE PESQUISA
                -------------------------------------------------------------------------------- -->
-            <div class="search-container">
-                <!-- Input de pesquisa -->
-                <input type="text" 
-                       id="search-input" 
-                       placeholder="Buscar Pokémon pelo nome ou número...">
-                
-                <!-- Botão de pesquisa -->
-                <button id="search-button">
-                    <i class="fas fa-search"></i> Buscar
-                </button>
-            </div>
-            
-            <!-- --------------------------------------------------------------------------------
+      <div class="search-container">
+         <!-- Input de pesquisa -->
+         <input type="text" id="search-input" placeholder="Buscar Pokémon pelo nome ou número...">
+
+         <!-- Botão de pesquisa -->
+         <button id="search-button">
+            <i class="fas fa-search"></i> Buscar
+         </button>
+      </div>
+
+      <!-- --------------------------------------------------------------------------------
                FILTROS DE TIPOS POKÉMON
                -------------------------------------------------------------------------------- -->
-            <div class="filters-container" id="type-filters">
-                <!-- Os botões de filtro serão gerados dinamicamente pelo JavaScript -->
-            </div>
-            
-            <!-- --------------------------------------------------------------------------------
+      <div class="filters-container" id="type-filters">
+         <!-- Os botões de filtro serão gerados dinamicamente pelo JavaScript -->
+      </div>
+
+      <!-- --------------------------------------------------------------------------------
                BOTÃO DE RESETAR FILTROS
                -------------------------------------------------------------------------------- -->
-            <button class="reset-filters" id="reset-filters">
-                <i class="fas fa-sync-alt"></i> Limpar Filtros
-            </button>
-        </header>
+      <button class="reset-filters" id="reset-filters">
+         <i class="fas fa-sync-alt"></i> Limpar Filtros
+      </button>
+   </header>
 
-        <!-- ==================================================================================
+   <!-- ==================================================================================
            SEÇÃO DE ESTADOS DE CARREGAMENTO E ERRO
-           ================================================================================== -->
-        
-        <!-- --------------------------------------------------------------------------------
-           SPINNER DE CARREGAMENTO
-           -------------------------------------------------------------------------------- -->
-        <div class="spinner" id="spinner"></div>
-        
-        <!-- --------------------------------------------------------------------------------
-           MENSAGEM DE ERRO
-           -------------------------------------------------------------------------------- -->
-        <div class="error-message" id="error-message">
-            <i class="fas fa-exclamation-triangle"></i>
-            Nenhum Pokémon encontrado. Tente novamente.
-        </div>
+   ================================================================================== -->
 
-        <!-- ==================================================================================
+   <!-- --------------------------------------------------------------------------------
+           SPINNER DE CARREGAMENTO
+   -------------------------------------------------------------------------------- -->
+   <div class="spinner" id="spinner"></div>
+
+   <!-- --------------------------------------------------------------------------------
+           MENSAGEM DE ERRO
+    -------------------------------------------------------------------------------- -->
+   <div class="error-message" id="error-message">
+      <i class="fas fa-exclamation-triangle"></i>
+      Nenhum Pokémon encontrado. Tente novamente.
+   </div>
+
+   <!-- ==================================================================================
            SEÇÃO PRINCIPAL DOS POKÉMON
-           ================================================================================== -->
-        
-        <!-- --------------------------------------------------------------------------------
+   ================================================================================== -->
+
+   <!-- --------------------------------------------------------------------------------
            GRID DE CARDS DOS POKÉMON
            -------------------------------------------------------------------------------- -->
-        <div class="pokemon-grid" id="pokemon-grid">
-            <!-- Os cards dos Pokémon serão gerados dinamicamente pelo JavaScript -->
-        </div>
+   <div class="pokemon-grid" id="pokemon-grid">
+      <!-- Os cards dos Pokémon serão gerados dinamicamente pelo JavaScript -->
+   </div>
 
-        <!-- ==================================================================================
+   <!-- ==================================================================================
            SEÇÃO DE PAGINAÇÃO
            ================================================================================== -->
-        
-        <!-- --------------------------------------------------------------------------------
+
+   <!-- --------------------------------------------------------------------------------
            CONTROLES DE PAGINAÇÃO
            -------------------------------------------------------------------------------- -->
-        <div class="pagination">
-            <!-- Botão página anterior -->
-            <button id="prev-button" disabled>
-                <i class="fas fa-arrow-left"></i> Anterior
-            </button>
-            
-            <!-- Botão próxima página -->
-            <button id="next-button">
-                Próximo <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
+   <div class="pagination">
+      <div class="pagination-buttons">
+         <button id="prev-button" disabled>
+            <i class="fas fa-arrow-left"></i> Anterior
+         </button>
 
-    <!-- ==================================================================================
+         <button id="next-button">
+            Próximo <i class="fas fa-arrow-right"></i>
+         </button>
+      </div>
+
+      <div class="page-jump">
+         <label for="page-input">Ir para página:</label>
+         <input type="number" id="page-input" min="1" placeholder="1">
+         <button id="go-button">Ir</button>
+         <span class="page-info">
+            Página <span id="current-page-display">1</span> de <span id="total-pages-display">1</span>
+         </span>
+      </div>
+   </div>
+   <!-- ==================================================================================
        MODAL DE DETALHES DO POKÉMON
        ================================================================================== -->
-    
-    <!-- --------------------------------------------------------------------------------
+
+   <!-- --------------------------------------------------------------------------------
        ESTRUTURA DO MODAL
        -------------------------------------------------------------------------------- -->
-    <div class="modal" id="pokemon-modal">
-        <div class="modal-content">
-            <!-- Botão de fechar modal -->
-            <span class="close-modal" id="close-modal">&times;</span>
-            
-            <!-- Container dos detalhes do Pokémon -->
-            <div class="pokemon-detail" id="pokemon-detail">
-                <!-- Os detalhes do Pokémon serão gerados dinamicamente pelo JavaScript -->
-            </div>
-        </div>
-    </div>
+   <div class="modal" id="pokemon-modal">
+      <div class="modal-content">
+         <!-- Botão de fechar modal -->
+         <span class="close-modal" id="close-modal">&times;</span>
 
-    <!-- ==================================================================================
+         <!-- Container dos detalhes do Pokémon -->
+         <div class="pokemon-detail" id="pokemon-detail">
+            <!-- Os detalhes do Pokémon serão gerados dinamicamente pelo JavaScript -->
+         </div>
+      </div>
+   </div>
+
+   <!-- ==================================================================================
        SCRIPTS JAVASCRIPT
        ================================================================================== -->
-    
-    <!-- --------------------------------------------------------------------------------
+
+   <!-- --------------------------------------------------------------------------------
        SCRIPT PRINCIPAL DA APLICAÇÃO
        -------------------------------------------------------------------------------- -->
-    <script src="script.js"></script>
+   <script src="script.js"></script>
 </body>
+
 </html>

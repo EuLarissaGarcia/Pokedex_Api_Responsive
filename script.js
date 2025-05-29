@@ -292,13 +292,125 @@ function createPokemonCard(pokemon) {
    ================================================================================== */
 
 /* --------------------------------------------------------------------------------
-   ATUALIZAR BOTÕES DE PAGINAÇÃO
+   ELEMENTOS DOM PARA PAGINAÇÃO AVANÇADA
+   -------------------------------------------------------------------------------- */
+
+// Elementos de paginação para ir para página específica
+const pageInput = document.getElementById('page-input');
+const goButton = document.getElementById('go-button');
+const currentPageDisplay = document.getElementById('current-page-display');
+const totalPagesDisplay = document.getElementById('total-pages-display');
+
+/* --------------------------------------------------------------------------------
+   ATUALIZAR BOTÕES E DISPLAYS DE PAGINAÇÃO
    -------------------------------------------------------------------------------- */
 
 function updatePaginationButtons() {
     prevButton.disabled = currentPage === 1;
     nextButton.disabled = currentPage === totalPages;
+    
+    // Atualizar displays se existirem
+    if (currentPageDisplay) {
+        currentPageDisplay.textContent = currentPage;
+    }
+    if (totalPagesDisplay) {
+        totalPagesDisplay.textContent = totalPages;
+    }
+    if (pageInput) {
+        pageInput.max = totalPages;
+        pageInput.value = '';
+        pageInput.placeholder = currentPage;
+    }
 }
+
+/* --------------------------------------------------------------------------------
+   NAVEGAR PARA PÁGINA ESPECÍFICA
+   -------------------------------------------------------------------------------- */
+
+function goToPage(pageNumber) {
+    const page = parseInt(pageNumber);
+    
+    // Validar se a página é válida
+    if (isNaN(page) || page < 1 || page > totalPages) {
+        console.log('Número de página inválido');
+        if (pageInput) pageInput.value = '';
+        return;
+    }
+    
+    if (page === currentPage) {
+        console.log('Já está na página atual');
+        if (pageInput) pageInput.value = '';
+        return;
+    }
+    
+    // Verificar se há filtros ativos que desabilitam a paginação
+    if (activeTypeFilter !== 'all') {
+        console.log('Filtro por tipo ativo - paginação desabilitada');
+        if (pageInput) pageInput.value = '';
+        return;
+    }
+    
+    if (activeSearchTerm !== '') {
+        console.log('Busca ativa - paginação desabilitada');
+        if (pageInput) pageInput.value = '';
+        return;
+    }
+    
+    // Atualizar a página atual
+    currentPage = page;
+    
+    // Carregar o conteúdo da nova página
+    fetchPokemonList();
+    
+    // Limpar o campo de input
+    if (pageInput) pageInput.value = '';
+    
+    console.log(`Navegando para página ${currentPage}`);
+}
+
+/* --------------------------------------------------------------------------------
+   CONFIGURAR EVENT LISTENERS PARA PAGINAÇÃO AVANÇADA
+   -------------------------------------------------------------------------------- */
+
+function setupEventListenersForPagination() {
+    // Event listeners para o sistema de ir para página específica
+    if (goButton) {
+        goButton.addEventListener('click', () => {
+            const pageNumber = pageInput ? pageInput.value : null;
+            if (pageNumber) {
+                goToPage(pageNumber);
+            }
+        });
+    }
+
+    // Permitir usar Enter no campo de input
+    if (pageInput) {
+        pageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const pageNumber = pageInput.value;
+                if (pageNumber) {
+                    goToPage(pageNumber);
+                }
+            }
+        });
+
+        // Validação em tempo real do input
+        pageInput.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            if (value < 1) {
+                e.target.value = 1;
+            } else if (value > totalPages) {
+                e.target.value = totalPages;
+            }
+        });
+    }
+}
+
+/* --------------------------------------------------------------------------------
+   INTEGRAÇÃO COM A FUNÇÃO setupEventListeners() PRINCIPAL
+   -------------------------------------------------------------------------------- */
+setupEventListenersForPagination();
+
 
 /* ==================================================================================
    MODAL DE DETALHES DO POKÉMON
@@ -468,7 +580,7 @@ async function showPokemonDetails(pokemonId) {
 }
 
  /*--------------------------------------------------------------------------------
-   BUSCAR CADEIA DE EVOLUÇÃO (DESIGN MELHORADO)
+   BUSCAR CADEIA DE EVOLUÇÃO (DESIGN MELHORADO + FORMAS VARIANTES)
    -------------------------------------------------------------------------------- */
 
 async function fetchEvolutionChain(speciesUrl) {
@@ -479,9 +591,9 @@ async function fetchEvolutionChain(speciesUrl) {
         const evolutionResponse = await fetch(speciesData.evolution_chain.url);
         const evolutionData = await evolutionResponse.json();
         
-        const evolutionChain = parseEvolutionChain(evolutionData.chain);
+        const evolutionChain = await parseEvolutionChainWithVariants(evolutionData.chain);
         
-        if (evolutionChain.length <= 1) {
+        if (evolutionChain.length <= 1 && evolutionChain[0]?.length <= 1) {
             return `
                 <div class="no-evolution">
                     <i class="fas fa-ban"></i>
@@ -527,34 +639,135 @@ async function fetchEvolutionChain(speciesUrl) {
 }
 
 /* --------------------------------------------------------------------------------
-   PROCESSAR CADEIA DE EVOLUÇÃO (CORRIGIDA)
+   PROCESSAR CADEIA DE EVOLUÇÃO COM FORMAS VARIANTES (CORRIGIDA)
    -------------------------------------------------------------------------------- */
 
-function parseEvolutionChain(chain) {
+async function parseEvolutionChainWithVariants(chain) {
     const evolutionStages = [];
     
-    function processEvolutionStage(current, stageIndex = 0) {
+    // Função auxiliar para buscar formas variantes de um Pokémon
+    async function getVariantForms(pokemonId, pokemonName) {
+        const variants = [];
+        
+        // Lista de IDs conhecidos de formas especiais (você pode expandir esta lista)
+        const variantMap = {
+            // Charizard e suas formas
+            6: [10034, 10035, 10196], // Mega X, Mega Y, Gigantamax
+            // Venusaur
+            3: [10033, 10195], // Mega, Gigantamax
+            // Blastoise
+            9: [10036, 10197], // Mega, Gigantamax
+            // Alakazam
+            65: [10037], // Mega
+            // Gengar
+            94: [10038, 10198], // Mega, Gigantamax
+            // Kangaskhan
+            115: [10039], // Mega
+            // Pinsir
+            127: [10040], // Mega
+            // Gyarados
+            130: [10041], // Mega
+            // Aerodactyl
+            142: [10042], // Mega
+            // Mewtwo
+            150: [10043, 10044], // Mega X, Mega Y
+            // Ampharos
+            181: [10045], // Mega
+            // Scizor
+            212: [10046], // Mega
+            // Heracross
+            214: [10047], // Mega
+            // Houndoom
+            229: [10048], // Mega
+            // Tyranitar
+            248: [10049], // Mega
+            // Blaziken
+            257: [10050], // Mega
+            // Gardevoir
+            282: [10051], // Mega
+            // Mawile
+            303: [10052], // Mega
+            // Aggron
+            306: [10053], // Mega
+            // Medicham
+            308: [10054], // Mega
+            // Manectric
+            310: [10055], // Mega
+            // Banette
+            354: [10056], // Mega
+            // Absol
+            359: [10057], // Mega
+            // Garchomp
+            445: [10058], // Mega
+            // Lucario
+            448: [10059], // Mega
+            // Abomasnow
+            460: [10060], // Mega
+            // Pikachu formas especiais (algumas)
+            25: [10080, 10081, 10082, 10083, 10084, 10199], // Várias formas especiais + Gigantamax
+        };
+        
+        // Adiciona o Pokémon original
+        variants.push({ name: pokemonName, id: pokemonId });
+        
+        // Adiciona as formas variantes se existirem
+        if (variantMap[pokemonId]) {
+            for (const variantId of variantMap[pokemonId]) {
+                try {
+                    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${variantId}`);
+                    if (response.ok) {
+                        const variantData = await response.json();
+                        variants.push({
+                            name: variantData.name,
+                            id: variantId
+                        });
+                    }
+                } catch (error) {
+                    console.log(`Forma variante ${variantId} não encontrada para ${pokemonName}`);
+                }
+            }
+        }
+        
+        return variants;
+    }
+    
+    async function processEvolutionStage(current, stageIndex = 0) {
         // Se não existe esse estágio ainda, cria um array vazio
         if (!evolutionStages[stageIndex]) {
             evolutionStages[stageIndex] = [];
         }
         
-        // Adiciona o Pokémon atual ao estágio
-        const pokemonId = current.species.url.split('/').slice(-2, -1)[0];
-        evolutionStages[stageIndex].push({
-            name: current.species.name,
-            id: parseInt(pokemonId)
-        });
+        // Extrai ID do Pokémon atual
+        const pokemonId = parseInt(current.species.url.split('/').slice(-2, -1)[0]);
+        const pokemonName = current.species.name;
+        
+        // Busca todas as formas variantes do Pokémon atual
+        const variants = await getVariantForms(pokemonId, pokemonName);
+        
+        // Adiciona todas as variantes ao estágio atual
+        evolutionStages[stageIndex].push(...variants);
         
         // Processa todas as evoluções possíveis (não apenas a primeira)
         if (current.evolves_to && current.evolves_to.length > 0) {
-            current.evolves_to.forEach(evolution => {
-                processEvolutionStage(evolution, stageIndex + 1);
-            });
+            for (const evolution of current.evolves_to) {
+                await processEvolutionStage(evolution, stageIndex + 1);
+            }
         }
     }
     
-    processEvolutionStage(chain);
+    await processEvolutionStage(chain);
+    
+    // Remove duplicatas baseado no ID
+    evolutionStages.forEach(stage => {
+        const uniqueIds = new Set();
+        stage = stage.filter(pokemon => {
+            if (uniqueIds.has(pokemon.id)) {
+                return false;
+            }
+            uniqueIds.add(pokemon.id);
+            return true;
+        });
+    });
     
     return evolutionStages;
 }
