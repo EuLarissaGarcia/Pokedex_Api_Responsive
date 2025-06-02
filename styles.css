@@ -300,8 +300,8 @@ header {
 }
 
 .filter-btn.active i {
-    color: white;
-    transform: scale(1.2);
+    color: white !important;
+    filter: brightness(0) invert(1);
 }
 
 /* Cores específicas para cada tipo quando ativo */

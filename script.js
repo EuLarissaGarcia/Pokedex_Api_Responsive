@@ -330,42 +330,33 @@ function updatePaginationButtons() {
 function goToPage(pageNumber) {
     const page = parseInt(pageNumber);
     
-    // Validar se a página é válida
-    if (isNaN(page) || page < 1 || page > totalPages) {
-        console.log('Número de página inválido');
-        if (pageInput) pageInput.value = '';
+    if (isNaN(page)) {
+        alert('Por favor, insira um número válido');
+        pageInput.value = '';
         return;
     }
     
-    if (page === currentPage) {
-        console.log('Já está na página atual');
-        if (pageInput) pageInput.value = '';
+    if (page < 1 || page > totalPages) {
+        alert(`Por favor, insira um número entre 1 e ${totalPages}`);
+        pageInput.value = '';
         return;
     }
     
-    // Verificar se há filtros ativos que desabilitam a paginação
     if (activeTypeFilter !== 'all') {
-        console.log('Filtro por tipo ativo - paginação desabilitada');
-        if (pageInput) pageInput.value = '';
+        alert('A paginação está desativada com filtros ativos');
+        pageInput.value = '';
         return;
     }
     
     if (activeSearchTerm !== '') {
-        console.log('Busca ativa - paginação desabilitada');
-        if (pageInput) pageInput.value = '';
+        alert('Limpe a pesquisa para usar a paginação');
+        pageInput.value = '';
         return;
     }
     
-    // Atualizar a página atual
     currentPage = page;
-    
-    // Carregar o conteúdo da nova página
     fetchPokemonList();
-    
-    // Limpar o campo de input
-    if (pageInput) pageInput.value = '';
-    
-    console.log(`Navegando para página ${currentPage}`);
+    pageInput.value = '';
 }
 
 /* --------------------------------------------------------------------------------
@@ -405,11 +396,6 @@ function setupEventListenersForPagination() {
         });
     }
 }
-
-/* --------------------------------------------------------------------------------
-   INTEGRAÇÃO COM A FUNÇÃO setupEventListeners() PRINCIPAL
-   -------------------------------------------------------------------------------- */
-setupEventListenersForPagination();
 
 
 /* ==================================================================================
@@ -841,7 +827,7 @@ function setupTabListeners() {
 function getStatIcon(statName) {
     const statIcons = {
         hp: 'fa-heart',
-        attack:'fa-sword',
+        attack:'fa-bolt',
         defense:'fa-shield',
         'special attack': 'fa-fire',
         'special defense': 'fa-shield-halved',
@@ -896,41 +882,46 @@ async function handleSearch() {
     pokemonGrid.innerHTML = '';
 
     try {
-        // Primeiro tentamos buscar exatamente pelo termo (pode ser ID ou nome)
-        try {
-            const response = await fetch(`${API_BASE_URL}/pokemon/${searchTerm}`);
-            
-            if (!response.ok) {
-                throw new Error('Pokémon não encontrado');
+        // 1. SEMPRE busca na API primeiro (ignora resultados locais)
+        // Tenta buscar como ID (se for número)
+        if (!isNaN(searchTerm)) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/pokemon/${searchTerm}`);
+                if (response.ok) {
+                    const pokemon = await response.json();
+                    filteredPokemon = [pokemon];
+                    renderPokemonCards(filteredPokemon);
+                    hideSpinner();
+                    
+                    // Desativa paginação durante a busca
+                    prevButton.disabled = true;
+                    nextButton.disabled = true;
+                    return;
+                }
+            } catch (idError) {
+                console.log('Não encontrou por ID, tentando por nome');
             }
-
-            const pokemon = await response.json();
-            filteredPokemon = [pokemon];
-            renderPokemonCards(filteredPokemon);
-            
-            // Desativar paginação durante a busca
-            prevButton.disabled = true;
-            nextButton.disabled = true;
-            
-            hideSpinner();
-            return;
-        } catch (exactError) {
-            console.log('Busca exata não encontrada, tentando busca parcial');
         }
 
-        // Se não encontrou exato, fazemos uma busca parcial na lista existente
-        const filtered = allPokemon.filter(pokemon => 
-            pokemon.name.toLowerCase().includes(searchTerm) || 
-            pokemon.id.toString().includes(searchTerm)
-        );
+        // 2. Busca por nome na API
+        const allPokemonResponse = await fetch(`${API_BASE_URL}/pokemon?limit=1000`);
+        const allPokemonData = await allPokemonResponse.json();
+        
+        // Filtra e limita a 50 resultados
+        const matches = allPokemonData.results
+            .filter(pokemon => pokemon.name.includes(searchTerm))
+            .slice(0, 50);
 
-        if (filtered.length > 0) {
-            filteredPokemon = filtered;
-            renderPokemonCards(filteredPokemon);
+        if (matches.length > 0) {
+            // Busca os detalhes dos Pokémon encontrados
+            const detailedPokemon = await Promise.all(
+                matches.map(pokemon => 
+                    fetch(pokemon.url).then(res => res.json())
+                )
+            );
             
-            // Desativar paginação durante a busca
-            prevButton.disabled = true;
-            nextButton.disabled = true;
+            filteredPokemon = detailedPokemon;
+            renderPokemonCards(filteredPokemon);
         } else {
             throw new Error('Nenhum Pokémon encontrado');
         }
@@ -941,6 +932,10 @@ async function handleSearch() {
         pokemonGrid.innerHTML = '';
         showError();
         hideSpinner();
+    } finally {
+        // Desativa paginação durante a busca
+        prevButton.disabled = true;
+        nextButton.disabled = true;
     }
 }
 
@@ -986,6 +981,25 @@ function applyFilters() {
    -------------------------------------------------------------------------------- */
 
 function setupEventListeners() {
+        // Configurar listeners da paginação avançada
+    if (goButton) {
+        goButton.addEventListener('click', () => {
+            if (!pageInput || !pageInput.value) {
+                alert('Por favor, digite um número de página');
+                return;
+            }
+            goToPage(pageInput.value);
+        });
+    }
+
+    if (pageInput) {
+        pageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && pageInput.value) {
+                goToPage(pageInput.value);
+            }
+        });
+    }
+
     // Event listeners para paginação
     prevButton.addEventListener('click', () => {
         if (currentPage > 1) {
